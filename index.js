@@ -1,31 +1,30 @@
 const mongoose = require('mongoose');
 const express = require('express');
-const helmet = require('helmet'); // New security import
-const cors = require('cors');     // FIX: You forgot to require cors
+const helmet = require('helmet');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 
-// Security and Middleware
-app.use(helmet());           // Protects against common web vulnerabilities
-app.use(cors());             // Allows your mobile app to talk to this server [cite: 243]
-app.use(express.json());      // Standard for receiving JSON data
+// Middleware
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-// Environment Variables
-const MONGO_URI = process.env.MONGO_URI; 
+const MONGO_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 3000;
-const quoteUrl = 'https://famous-quotes4.p.rapidapi.com/random?category=all&count=2';
-const options = {
-    method: 'GET',
-    headers: {
-        'x-rapidapi-key': '188e42b46bmshd3d4bd4685bee4ap1565e4jsnef06258c0226',
-        'x-rapidapi-host': 'famous-quotes4.p.rapidapi.com'
-    }
-};
 
+// --- DATABASE SCHEMA ---
+const QuoteSchema = new mongoose.Schema({
+  text: String,
+  quote: String,
+  createdAt: { type: Date, default: Date.now }
+});
+const Quote = mongoose.model('Quote', QuoteSchema);
 
+// --- ROUTES ---
 
-// Routes
+// Existing Status Route
 app.get('/api/status', (req, res) => {
   res.json({ 
     status: "Online",
@@ -35,16 +34,35 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-app.post('/api/quote', (req, res) => {
+
+// NEW: Route to save data to MongoDB
+app.post('/api/save-quote', async (req, res) => {
   try {
-    const response = fetch(quoteUrl, options);
-    const result = response.json();
-    res.json(result[0]?.text);
-  } catch (e) {
-    console.error("Error fetching quote:", e);
+    // Adding default values in case one is missing
+    const { text = "No text", quote = "No quote" } = req.body;
+
+    const newEntry = await Quote.create({ text, quote });
+
+    // alternative method for create
+    // const newEntry = new Quote({ text, quote });
+    // await newEntry.save();
+
+    console.log("📥 Data saved to MongoDB:", newEntry);
+    res.status(201).json({ message: "Saved successfully!", data: newEntry });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
+// GET all saved quotes (newest first)
+app.get('/api/quotes', async (req, res) => {
+  try {
+    const quotes = await Quote.find().sort({ createdAt: -1 });
+    res.json(quotes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 mongoose.connect(MONGO_URI)
   .then(() => {
@@ -55,5 +73,5 @@ mongoose.connect(MONGO_URI)
   })
   .catch((err) => {
     console.error("❌ MongoDB Connection Error:", err.message);
-    process.exit(1); // Stop the server if the password is wrong
+    process.exit(1);
   });
