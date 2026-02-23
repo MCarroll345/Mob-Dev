@@ -14,6 +14,16 @@ app.use(express.json());      // Standard for receiving JSON data
 // Environment Variables
 const MONGO_URI = process.env.MONGO_URI; 
 const PORT = process.env.PORT || 3000;
+const quoteUrl = 'https://famous-quotes4.p.rapidapi.com/random?category=all&count=2';
+const options = {
+    method: 'GET',
+    headers: {
+        'x-rapidapi-key': '188e42b46bmshd3d4bd4685bee4ap1565e4jsnef06258c0226',
+        'x-rapidapi-host': 'famous-quotes4.p.rapidapi.com'
+    }
+};
+
+
 
 // Routes
 app.get('/api/status', (req, res) => {
@@ -24,6 +34,17 @@ app.get('/api/status', (req, res) => {
     timestamp: new Date()
   });
 });
+
+app.post('/api/quote', (req, res) => {
+  try {
+    const response = fetch(quoteUrl, options);
+    const result = response.json();
+    res.json(result[0]?.text);
+  } catch (e) {
+    console.error("Error fetching quote:", e);
+  }
+});
+
 
 mongoose.connect(MONGO_URI)
   .then(() => {
