@@ -100,6 +100,7 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
+
 mongoose.connect(MONGO_URI)
   .then(async () => {
     console.log("✅ Successfully connected to MongoDB");
