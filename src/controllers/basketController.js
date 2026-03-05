@@ -20,11 +20,10 @@ exports.addToBasket = async (req, res) => {
   }
 }
 
-// READ all products
 exports.getBasket = async (req, res) => {
   try {
     const { uid } = req.params;
-    const baskets = await Basket.findById(uid);
+    const baskets = await Basket.find({ uid });
     res.json(baskets);
   } catch (err) {
     res.status(500).json({ message: "Error fetching products" });
