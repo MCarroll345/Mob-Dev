@@ -8,11 +8,21 @@ const Basket = require('../models/Basket');
 // CREATE a new product
 exports.addToBasket = async (req, res) => {
   try {
-    const { uid, iid, quantity } = req.body; // include image from client
+    const { uid, iid, quantity } = req.body;
+    const existing = await Basket.findOne({ uid, iid });
+    
+    if (existing) {
+      existing.quantity += quantity || 1;
+      await existing.save();
+      return res.status(200).json({
+        message: "Added to basket successfully",
+        basket: existing
+      });
+    }
+    
     const newBasket = await Basket.create({ uid, iid, quantity });
-
     res.status(201).json({
-      message: "Added to basket successfully!", // Requirement satisfied
+      message: "Added to basket successfully!",
       basket: newBasket
     });
   } catch (err) {
