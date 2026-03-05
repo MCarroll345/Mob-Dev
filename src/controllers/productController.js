@@ -10,9 +10,6 @@ exports.createProduct = async (req, res) => {
   try {
     const { name, price, description, image } = req.body; // include image from client
     const newProduct = await Product.create({ name, price, description, image });
-    
-    //const newProduct = new Product({ name, price, description });
-    //await newProduct.save();
 
     res.status(201).json({
       message: "Product added successfully!", // Requirement satisfied
