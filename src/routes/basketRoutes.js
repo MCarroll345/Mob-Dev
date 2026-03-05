@@ -4,8 +4,8 @@ const router = express.Router();
 const basketController = require('../controllers/basketController');
 
 
-router.get('/get', productController.getBasket);
-router.post('/add', productController.addToBasket);
-router.delete('/del/:id', productController.removeItem);
+router.get('/get', basketController.getBasket);
+router.post('/add', basketController.addToBasket);
+router.delete('/del/:id', basketController.removeItem);
 
 module.exports = router;
