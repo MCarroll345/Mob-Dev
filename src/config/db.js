@@ -9,7 +9,7 @@ const connectDB = async () => {
 
     const count = await Product.countDocuments();
     if (count === 0) {
-        const seedProducts = [/* Seed data later */]
+        const seedProducts = [{ name: 'tshirt', price: 20, description: 'Large green tshirt', image: 'base64string...' }]
         await Product.insertMany(seedProducts);
         console.log('🟢 Seeded initial products');
     }
