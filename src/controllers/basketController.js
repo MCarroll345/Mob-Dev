@@ -35,7 +35,7 @@ exports.addToBasket = async (req, res) => {
 exports.getBasket = async (req, res) => {
   try {
     const { uid } = req.params;
-    const baskets = await Basket.find({ uid }).populate();
+    const baskets = await Basket.find({ uid }).populate('iid');
     res.status(200).json(baskets);
   } catch (err) {
     res.status(500).json({ message: "Error fetching basket", error: err.message });
