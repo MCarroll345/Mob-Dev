@@ -14,16 +14,18 @@ exports.addToBasket = async (req, res) => {
     if (existing) {
       existing.quantity += quantity || 1;
       await existing.save();
+      const populated = await existing.populate('iid', 'name price description image');
       return res.status(200).json({
         message: "Added to basket successfully",
-        basket: existing
+        basket: populated
       });
     }
     
     const newBasket = await Basket.create({ uid, iid, quantity });
+    const populated = await newBasket.populate('iid', 'name price description image');
     res.status(201).json({
       message: "Added to basket successfully",
-      basket: newBasket
+      basket: populated
     });
   } catch (err) {
     res.status(500).json({ message: "Error adding to basket", error: err.message });
