@@ -43,7 +43,7 @@ exports.getBasket = async (req, res) => {
 exports.removeItem = async (req, res) => {
   try {
     const { uid, iid } = req.params;
-    const deleted = await Basket.findOneAndDelete({ uid, iid });
+    const deleted = await Basket.findOneAndDelete({ uid, iid: new mongoose.Types.ObjectId(iid) });
     if (!deleted) {
       return res.status(404).json({ message: 'Item not found' });
     }
