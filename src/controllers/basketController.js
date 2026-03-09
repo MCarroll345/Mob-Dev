@@ -40,15 +40,14 @@ exports.getBasket = async (req, res) => {
   }
 }
 
-// DELETE a product by ID
 exports.removeItem = async (req, res) => {
   try {
-    const { iid } = req.params;
-    const deleted = await Basket.findByIdAndDelete(iid);
+    const { id } = req.params;
+    const deleted = await Basket.findByIdAndDelete(id);
     if (!deleted) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json({ message: 'Removed from basket', product: deleted });
+    res.status(200).json({ message: 'Removed from basket', product: deleted });
   } catch (err) {
     res.status(500).json({ message: 'Error removing item', error: err.message });
   }
