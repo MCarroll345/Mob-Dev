@@ -9,6 +9,7 @@ const Basket = require('../models/Basket');
 exports.addToBasket = async (req, res) => {
   try {
     const { uid, iid, quantity } = req.body;
+    console.log('Add to basket - uid:', uid, 'iid:', iid, 'quantity:', quantity);
     const existing = await Basket.findOne({ uid, iid });
     
     if (existing) {
@@ -21,11 +22,13 @@ exports.addToBasket = async (req, res) => {
     }
     
     const newBasket = await Basket.create({ uid, iid, quantity });
+    console.log('Created basket:', newBasket);
     res.status(201).json({
       message: "Added to basket successfully",
       basket: newBasket
     });
   } catch (err) {
+    console.log('Error adding to basket:', err);
     res.status(500).json({ message: "Error adding to basket", error: err.message });
   }
 }
